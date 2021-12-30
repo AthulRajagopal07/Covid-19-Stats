@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Covid 19 STATS</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <style>
+        body {
+            background-color: cadetblue;
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mt-5">COVID-19 LIVE DATA</h1>
+        <br><br>
+        <table class="table table-hover">
+            <tr>
+                <th>ENTIRE WORLD DATA</th>
+            </tr>
+            <tr>
+                <th>TOTAL CASES</th>
+                <th>NEW CONFIRMED</th>
+                <th>TOTAL DEATHS</th>
+                <th>NEW DEATHS</th>
+            </tr>
+            <tr id="worldData">
+
+            </tr>
+            </table>
+
+            <br>
+            <br>
+
+            <form id="myForm">
+                <select id="selectCountry" onchange="individualCountriesData()">
+                    <option>Choose A Country</option>
+                </select>
+            </form>
+
+            <br>
+            <br>
+
+            <table class="table table-hover">
+                <tr>
+                    <th>COUNTRY BASED DATA</th>
+                </tr>
+                <tr>
+                    <th>TOTAL CASES</th>
+                    <th>NEW CONFIRMED</th>
+                    <th>TOTAL DEATHS</th>
+                    <th>NEW DEATHS</th>
+                </tr>
+                <tr id="individualCountryData">
+    
+                </tr>
+                </table>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var worldData=''
+    var individualCountryData=''
+    worldInitData()
+    worldCountries()
+    function worldInitData(){
+        var url="https://api.covid19api.com/summary "
+
+        $.get(url,function(worldData){
+            worldData=`
+            <td>${worldData.Global.TotalConfirmed}</td>
+            <td>${worldData.Global.NewDeaths}</td>
+            <td>${worldData.Global.TotalDeaths}</td>
+            <td>${worldData.Global.NewConfirmed}</td>`
+           $("#worldData").html(worldData)
+        })
+    }
+
+    async function worldCountries(){
+        var url="https://api.covid19api.com/countries"
+        $.get(url,function(individualCountryData){
+            for(var noofCountries=0;noofCountries<=individualCountryData.length-1;noofCountries++){
+                $("#selectCountry").append("<option value ="+individualCountryData[noofCountries].Country+">"+individualCountryData[noofCountries].Country+"</option>")
+            }
+        })
+    }
+
+    function individualCountriesData(){
+        var url="https://api.covid19api.com/summary "
+
+        $.get(url,function(individualCountryData){
+            for(var count=0; count<=individualCountryData.Countries.length; count++){
+                var selected= $("#selectCountry").find('option:selected').text()
+                if(individualCountryData.Countries[count].Country==selected){
+                    individualCountryData=`
+                    <td>${individualCountryData.Countries[count].TotalConfirmed}</td>
+                    <td>${individualCountryData.Countries[count].NewDeaths}</td>
+                    <td>${individualCountryData.Countries[count].TotalDeaths}</td>
+                    <td>${individualCountryData.Countries[count].NewConfirmed}</td>`
+                    $("#individualCountryData").html(individualCountryData)
+                    break;
+                }
+            }
+        })
+    }
+</script>
+</html>
